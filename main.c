@@ -34,10 +34,10 @@ int main() {
     
     //variaveis de entrada do usuario
     char input[55];
-    char start_date = "";  
-    char end_date = "";
-    char start_time = "";
-    char end_time = "";
+    char start_date[10] = "";  
+    char end_date[10] = "";
+    char start_time[8] = "";
+    char end_time[8] = "";
 
 
     arquivo = fopen("chuiter.txt", "r"); //abre o arquivo
@@ -53,7 +53,7 @@ int main() {
             fprintf(stderr, "Erro para ler a linha: %s\n", chuiter);
         }
     }
-    
+    /*
     while(menu == 1){ //loop de pesquisa
         scanf(input ,"%s %s %s %s %s", name, start_date, start_time, end_date, end_time);
         if(name == "*"){ // add função para busca com todos os usuarios
@@ -77,10 +77,13 @@ int main() {
         name: nome de um usuario
         a: inteiro de inicio de intervalo
         b: inteiro de fim de intervalo
-        */
+        
         search_chuiter(root,"globo",0,9399994999959); //OBS: add ponteiro para Qtd
 
     }
+    */ 
+
+    search_chuiter(root,"globo",0,9399994999959);
     
     
    
