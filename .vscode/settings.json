@@ -1,0 +1,9 @@
+{
+    "files.associations": {
+        "trie.C": "cpp",
+        "stdio.h": "c",
+        "avl.h": "c",
+        "trie.h": "c",
+        "time.h": "c"
+    }
+}
