@@ -12,22 +12,21 @@
 void search_chuiter(TrieNode *root,const char *name, long long int a, long long int b){
     TrieNode *aux = search_trie(root,name);
     if(aux){
-        inorder_avl(aux->root_avl, a, b);    
+        inorder_avl(aux->root_avl, a, b, name);    
     }else{
         printf("usuario não encontrado");
     }
 }
-
-
+ 
 int main() {
     char name[25] = ""; // Para o primeiro elemento (char até espaço)
-    long long int date; // Para o número inteiro
+    int date; // Para o número inteiro
     char chuiter[MAX_LINHA]; //Para o restante da linha (char seguido pela frase)                                
     
     TrieNode *root = create_node_trie(); //criando o primeiro nodo da trie (vazio)
     FILE *arquivo;
     long long int a = 0; //data de inicio de intervalo
-    long long int b = 999999999999999; //data de fim de intervalo
+    long long int b = 9999999999999999; //data de fim de intervalo
     int menu = 1; //criterio de parada do programa
     time_t now = time(NULL); //marca a hora atual
     int Qtd = 0; //contador de chutiters
@@ -60,13 +59,16 @@ int main() {
 
         }
         if(start_date == "*"){ // add caso de não ter data de inicio 
-
+            if(start_time == "*"){ // add caso de não ter hora de inicio 
+                a = start_time;
+            }
+            
         }
         if(start_time == "*"){ // add caso de não ter hora de inicio 
-
+            a = start_time;
         }
         if(end_date == "*"){ // add caso de não ter data final
-
+            b = 999999999999999;
         }
         if(end_time == "*"){ // add caso de não ter hora final
 
@@ -79,12 +81,13 @@ int main() {
         b: inteiro de fim de intervalo
         
         search_chuiter(root,"globo",0,9399994999959); //OBS: add ponteiro para Qtd
-
+    
     }
     */ 
 
-    search_chuiter(root,"globo",0,9399994999959);
-    
+    search_chuiter(root,"globo",0,2147483647);
+    printf("\n \n ");
+    messages_from_all_users(root, 0, 2147483647,NULL);
     
    
 

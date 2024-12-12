@@ -77,12 +77,12 @@ AVLNode *insert_avl(AVLNode *root, int key, char *chuiter) {
     return root;
 }
 
-void inorder_avl(AVLNode *root, long long int a, long long int b) {
+void inorder_avl(AVLNode *root, long long int a, long long int b, const char *name) {
     if (root) {
-        inorder_avl(root->left, a, b);
+        inorder_avl(root->left, a, b, name);
         if(root->key >= a && root->key <= b)
-            printf("%d -- %s \n", root->key, root->chuiter);
-        inorder_avl(root->right, a, b);
+            printf("%s %d -- %s \n",name, root->key, root->chuiter);
+        inorder_avl(root->right, a, b, name);
     }
 }
 
