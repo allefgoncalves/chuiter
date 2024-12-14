@@ -67,3 +67,13 @@ void *messages_from_all_users(TrieNode *root, long long int a, long long int b, 
        }
     }
 }
+
+void free_trie(TrieNode *root){
+    for (int i = 0; i < ASCII_SIZE; i++){
+        if(root->children[i] != NULL){
+            free_trie(root->children[i]);
+        }
+    }
+    free_avl(root->root_avl);
+    free(root);
+}

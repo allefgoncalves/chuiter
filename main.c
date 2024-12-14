@@ -17,6 +17,19 @@ void search_chuiter(TrieNode *root,const char *name, long long int a, long long 
         printf("usuario não encontrado");
     }
 }
+
+int my_strptime(const char *s, const char *format, struct tm *tm) {
+    // Exemplo básico para tratar apenas o formato "%Y-%m-%d %H:%M:%S"
+    if (strcmp(format, "%Y-%m-%d %H:%M:%S") == 0) {
+        sscanf(s, "%d-%d-%d %d:%d:%d",
+               &tm->tm_year, &tm->tm_mon, &tm->tm_mday,
+               &tm->tm_hour, &tm->tm_min, &tm->tm_sec);
+        tm->tm_year -= 1900;  // Ajustar o ano
+        tm->tm_mon -= 1;      // Ajustar o mês
+        return 1;
+    }
+    return 0;  // Formato não suportado
+}
  
 int main() {
     char name[25] = ""; // Para o primeiro elemento (char até espaço)
@@ -27,16 +40,17 @@ int main() {
     FILE *arquivo;
     long long int a = 0; //data de inicio de intervalo
     long long int b = 9999999999999999; //data de fim de intervalo
-    int menu = 1; //criterio de parada do programa
-    time_t now = time(NULL); //marca a hora atual
     int Qtd = 0; //contador de chutiters
     
     //variaveis de entrada do usuario
-    char input[55];
-    char start_date[10] = "";  
-    char end_date[10] = "";
-    char start_time[8] = "";
-    char end_time[8] = "";
+    char input[100];
+    char start_date[15] = "";
+    char end_date[15] = "";
+    char start_time[15] = "";
+    char end_time[15] = "";
+    struct tm start_tm = {0}; // inicializa struct tm
+    struct tm end_tm = {0};
+    time_t start_timestamp, end_timestamp;
 
 
     arquivo = fopen("chuiter.txt", "r"); //abre o arquivo
@@ -52,45 +66,55 @@ int main() {
             fprintf(stderr, "Erro para ler a linha: %s\n", chuiter);
         }
     }
-    /*
-    while(menu == 1){ //loop de pesquisa
-        scanf(input ,"%s %s %s %s %s", name, start_date, start_time, end_date, end_time);
-        if(name == "*"){ // add função para busca com todos os usuarios
-
-        }
-        if(start_date == "*"){ // add caso de não ter data de inicio 
-            if(start_time == "*"){ // add caso de não ter hora de inicio 
-                a = start_time;
-            }
-            
-        }
-        if(start_time == "*"){ // add caso de não ter hora de inicio 
-            a = start_time;
-        }
-        if(end_date == "*"){ // add caso de não ter data final
-            b = 999999999999999;
-        }
-        if(end_time == "*"){ // add caso de não ter hora final
-
-        }
-
-        /*função recebe:
-        root: ponteiro para o primeiro no da trie
-        name: nome de um usuario
-        a: inteiro de inicio de intervalo
-        b: inteiro de fim de intervalo
-        
-        search_chuiter(root,"globo",0,9399994999959); //OBS: add ponteiro para Qtd
-    
-    }
-    */ 
-
-    search_chuiter(root,"globo",0,2147483647);
-    printf("\n \n ");
-    messages_from_all_users(root, 0, 2147483647,NULL);
-    
-   
-
     fclose(arquivo); //fecha o arquivo
+    
+    while (1)// loop de consulta
+    {
+        printf("Digite a consulta (nome data_inicio hora_inicio data_fim hora_fim): ");
+        fgets(input, sizeof(input), stdin);
+        input[strcspn(input, "\n")] = 0;
+
+        if (strcmp(input, "sair") == 0)
+        {
+            break;
+        }
+
+        int scan_result = sscanf(input, "%s %s %s %s %s", name, start_date, start_time, end_date, end_time);
+
+        if (scan_result < 5)
+        {
+            printf("Entrada invalida. Use o formato: nome data_inicio hora_inicio data_fim hora_fim\n");
+            continue;
+        }
+
+        // converte data e hora de inicio
+        if (strcmp(start_date, "*") != 0 && strcmp(start_time, "*") != 0)
+        {
+            char start_datetime[30];
+            sprintf(start_datetime, "%s %s", start_date, start_time);
+            my_strptime(start_datetime, "%Y-%m-%d %H:%M:%S", &start_tm);
+            start_timestamp = mktime(&start_tm);
+        }
+        else
+        {
+            start_timestamp = 0; // valor minimo pro timestamp
+        }
+
+        // Converte data e hora de fim
+        if (strcmp(end_date, "*") != 0 && strcmp(end_time, "*") != 0)
+        {
+            char end_datetime[30];
+            sprintf(end_datetime, "%s %s", end_date, end_time);
+            my_strptime(end_datetime, "%Y-%m-%d %H:%M:%S", &end_tm);
+            end_timestamp = mktime(&end_tm);
+        }
+        else
+        {
+            end_timestamp = 9999999; // valor maximo pro timestamp
+        }
+
+        search_chuiter(root, name, start_timestamp, end_timestamp);
+    }
+ 
     return 0;
 }

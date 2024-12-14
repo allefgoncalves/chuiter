@@ -6,12 +6,13 @@ int height(AVLNode *node) {
     return node ? node->height : 0;
 }
 
-AVLNode *create_node_avl(int key, char *chuiter) {
+AVLNode *create_node_avl(time_t key, char *chuiter) {
     AVLNode *node = (AVLNode*)malloc(sizeof(AVLNode));
     node->key = key;
     node->left = node->right = NULL;
     node->height = 1;
     node->chuiter = strdup(chuiter);
+    node->tm = NULL;
     if (!node->chuiter) {
         printf("Erro: falha ao alocar mensagem\n");
         free(node);
@@ -44,7 +45,7 @@ int get_balance(AVLNode *node) {
     return node ? height(node->left) - height(node->right) : 0;
 }
 
-AVLNode *insert_avl(AVLNode *root, int key, char *chuiter) {
+AVLNode *insert_avl(AVLNode *root, time_t key, char *chuiter) {
     if (!root) 
         return create_node_avl(key, chuiter);
 
@@ -77,11 +78,16 @@ AVLNode *insert_avl(AVLNode *root, int key, char *chuiter) {
     return root;
 }
 
-void inorder_avl(AVLNode *root, long long int a, long long int b, const char *name) {
+void inorder_avl(AVLNode *root, long long int a, long long int b,  const char *name) {
     if (root) {
         inorder_avl(root->left, a, b, name);
+        root->tm = localtime(&root->key);
+        char buffer[80];
         if(root->key >= a && root->key <= b)
-            printf("%s %d -- %s \n",name, root->key, root->chuiter);
+        {
+            strftime(buffer, sizeof(buffer), "%d/%m/%Y %H:%M:%S", root->tm);
+            printf("%s %s  %s \n", name, buffer, root->chuiter);
+        }    
         inorder_avl(root->right, a, b, name);
     }
 }
