@@ -137,7 +137,8 @@ int main() {
         printf("%d chuites encontrado(s) \n\n", Qtd);
         Qtd=0;
     }
- 
+
+    free_trie(root); //desalocando a menmoria
     return 0;
 }
 
