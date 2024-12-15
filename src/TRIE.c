@@ -42,7 +42,7 @@ TrieNode *search_trie(TrieNode *root, const char *name) { //busca de um nome exp
 }
 
 //varredura e exibição das mensagens, no intervalo A-B, de todos os usuarios cadastrados
-void *messages_from_all_users(TrieNode *root, long long int a, long long int b, const char *name){
+void *messages_from_all_users(TrieNode *root, long long int a, long long int b, const char *name, int *Qtd){
     TrieNode *current = root;
 
     char current_name[ASCII_SIZE] = ""; //criando array de char vazio 
@@ -51,7 +51,7 @@ void *messages_from_all_users(TrieNode *root, long long int a, long long int b, 
     }
 
     if(current->end){ //verifica se é um nodo final
-        inorder_avl(current->root_avl, a, b, current_name);
+        inorder_avl(current->root_avl, a, b, current_name, Qtd);
     }
 
     int index = 0;  //buscando o fim do array
@@ -63,7 +63,7 @@ void *messages_from_all_users(TrieNode *root, long long int a, long long int b, 
        if(current->children[i] != NULL){
             current_name[index] =  i + 'a';
             current_name[index + 1] = '\0'; //define uum novo tamanho para a verificação dos filhos        
-            messages_from_all_users(current->children[i], a, b, current_name);
+            messages_from_all_users(current->children[i], a, b, current_name, Qtd);
        }
     }
 }

@@ -78,17 +78,18 @@ AVLNode *insert_avl(AVLNode *root, time_t key, char *chuiter) {
     return root;
 }
 
-void inorder_avl(AVLNode *root, long long int a, long long int b,  const char *name) {
+void inorder_avl(AVLNode *root, long long int a, long long int b,  const char *name, int *Qtd) {
     if (root) {
-        inorder_avl(root->left, a, b, name);
+        inorder_avl(root->left, a, b, name, Qtd);
         root->tm = localtime(&root->key);
         char buffer[80];
         if(root->key >= a && root->key <= b)
         {
             strftime(buffer, sizeof(buffer), "%d/%m/%Y %H:%M:%S", root->tm);
             printf("%s %s  %s \n", name, buffer, root->chuiter);
+            *Qtd+=1;
         }    
-        inorder_avl(root->right, a, b, name);
+        inorder_avl(root->right, a, b, name, Qtd);
     }
 }
 

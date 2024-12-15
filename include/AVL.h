@@ -19,7 +19,7 @@ typedef struct AVLNode {
 
 AVLNode *create_node_avl(time_t key, char *chuiter); //cria nó 
 AVLNode *insert_avl(AVLNode  *root,time_t key, char *chuiter);  //insere nó
-void inorder_avl(AVLNode *root, long long int a, long long int b, const char *name);  //função para a impressao das mensagens em um intervalo A-B          
+void inorder_avl(AVLNode *root, long long int a, long long int b, const char *name, int *Qtd);  //função para a impressao das mensagens em um intervalo A-B          
 void free_avl(AVLNode *root);    //libera o espaço de memoria
  
 #endif

@@ -3,26 +3,27 @@
 #include <time.h>
 
 /*
-//função de busca que vai receber:
-//TrieNode *root: primeiro nó "raiz"
-//name: variavel da arvore trie que busca o usuario
-//int A: variavel de inicio de intervalo
-//int B: variavel de fim de intervalo
+    função de busca que vai receber:
+    TrieNode *root: primeiro nó "raiz"
+    name: variavel da arvore trie que busca o usuario
+    int A: variavel de inicio de intervalo
+    int B: variavel de fim de intervalo
+    *Qtd: endereço da variavel na main
 */
-void search_chuiter(TrieNode *root,const char *name, long long int a, long long int b){
+void search_chuiter(TrieNode *root,const char *name, long long int a, long long int b, int *Qtd){
     TrieNode *aux = search_trie(root,name);
     if(aux){
-        inorder_avl(aux->root_avl, a, b, name);    
+        inorder_avl(aux->root_avl, a, b, name, Qtd);    
     }else{
         printf("usuario não encontrado");
     }
 }
 
-int my_strptime(const char *s, const char *format, struct tm *tm) {
-    // Exemplo básico para tratar apenas o formato "%Y-%m-%d %H:%M:%S"
-    if (strcmp(format, "%Y-%m-%d %H:%M:%S") == 0) {
-        sscanf(s, "%d-%d-%d %d:%d:%d",
-               &tm->tm_year, &tm->tm_mon, &tm->tm_mday,
+int my_strptime(const char *s, const char *format, struct tm *tm) { //função para ajuste de formato
+    if (strcmp(format, "%d/%m/%Y %H:%M:%S") == 0){
+        memset(tm, 0, sizeof(struct tm));
+        sscanf(s, "%d/%d/%d %d:%d:%d",
+               &tm->tm_mday, &tm->tm_mon, &tm->tm_year,
                &tm->tm_hour, &tm->tm_min, &tm->tm_sec);
         tm->tm_year -= 1900;  // Ajustar o ano
         tm->tm_mon -= 1;      // Ajustar o mês
@@ -48,10 +49,13 @@ int main() {
     char end_date[15] = "";
     char start_time[15] = "";
     char end_time[15] = "";
+    char maxD[15] = "31/12/5000";
+    char minD[15] = "01/01/1970";
+    char maxH[15] = "23:59:59";
+    char minH[15] = "00:00:00";
     struct tm start_tm = {0}; // inicializa struct tm
     struct tm end_tm = {0};
     time_t start_timestamp, end_timestamp;
-
 
     arquivo = fopen("chuiter.txt", "r"); //abre o arquivo
         if (arquivo == NULL) {
@@ -61,60 +65,80 @@ int main() {
 
     while (fgets(chuiter, MAX_LINHA, arquivo) != NULL) { //leitura do arquivo e inserção de dados
         if (sscanf(chuiter, "%s %ld %[^\n]", name, &date, chuiter) == 3) {
-            insert_trie(root,name,date,chuiter);
-        } else {
+            insert_trie(root, name, date, chuiter);
+        } 
+        else{
             fprintf(stderr, "Erro para ler a linha: %s\n", chuiter);
         }
     }
     fclose(arquivo); //fecha o arquivo
-    
-    while (1)// loop de consulta
-    {
-        printf("Digite a consulta (nome data_inicio hora_inicio data_fim hora_fim): ");
-        fgets(input, sizeof(input), stdin);
+        
+    while (fgets(input, sizeof(input), stdin) != NULL){ // loop de consulta termina com sinal EOF (linux:Pressione Ctrl+D, windows:Pressione Ctrl+Z e depois Enter)
         input[strcspn(input, "\n")] = 0;
 
-        if (strcmp(input, "sair") == 0)
-        {
-            break;
+        if(sscanf(input, "%s %s %s %s %s", name, start_date, start_time, end_date, end_time) == 5){
+
         }
-
-        int scan_result = sscanf(input, "%s %s %s %s %s", name, start_date, start_time, end_date, end_time);
-
-        if (scan_result < 5)
-        {
-            printf("Entrada invalida. Use o formato: nome data_inicio hora_inicio data_fim hora_fim\n");
-            continue;
+        else{
+            printf("entrada invalida");
         }
 
         // converte data e hora de inicio
-        if (strcmp(start_date, "*") != 0 && strcmp(start_time, "*") != 0)
-        {
+        if (strcmp(start_date, "*") != 0 && strcmp(start_time, "*") != 0){
             char start_datetime[30];
             sprintf(start_datetime, "%s %s", start_date, start_time);
-            my_strptime(start_datetime, "%Y-%m-%d %H:%M:%S", &start_tm);
+            my_strptime(start_datetime, "%d/%m/%Y %H:%M:%S", &start_tm);
             start_timestamp = mktime(&start_tm);
         }
-        else
-        {
-            start_timestamp = 0; // valor minimo pro timestamp
+        else if (strcmp(start_date, "*") != 0 && strcmp(start_time, "*") == 0){
+            char start_datetime[30];
+            sprintf(start_datetime, "%s %s", start_date, minH);
+            my_strptime(start_datetime, "%d/%m/%Y %H:%M:%S", &start_tm);
+            start_timestamp = mktime(&start_tm);
+        }
+        else if (strcmp(start_date, "*") == 0 && strcmp(start_time, "*") != 0){
+            char start_datetime[30];
+            sprintf(start_datetime, "%s %s", minD, start_time);
+            my_strptime(start_datetime, "%d/%m/%Y %H:%M:%S", &start_tm);
+            start_timestamp = mktime(&start_tm);
+        }
+        else if(strcmp(start_date, "*") == 0 && strcmp(start_time, "*") == 0){
+            start_timestamp = a; // valor minimo pro timestamp
         }
 
         // Converte data e hora de fim
-        if (strcmp(end_date, "*") != 0 && strcmp(end_time, "*") != 0)
-        {
+        if (strcmp(end_date, "*") != 0 && strcmp(end_time, "*") != 0){
             char end_datetime[30];
             sprintf(end_datetime, "%s %s", end_date, end_time);
-            my_strptime(end_datetime, "%Y-%m-%d %H:%M:%S", &end_tm);
+            my_strptime(end_datetime, "%d/%m/%Y %H:%M:%S", &end_tm);
             end_timestamp = mktime(&end_tm);
         }
-        else
-        {
-            end_timestamp = 9999999; // valor maximo pro timestamp
+        else if (strcmp(end_date, "*") != 0 && strcmp(end_time, "*") == 0){
+            char end_datetime[30];
+            sprintf(end_datetime, "%s %s", end_date, maxH);
+            my_strptime(end_datetime, "%d/%m/%Y %H:%M:%S", &end_tm);
+            end_timestamp = mktime(&end_tm);
+        }
+        else if (strcmp(end_date, "*") == 0 && strcmp(end_time, "*") != 0){
+            char end_datetime[30];
+            sprintf(end_datetime, "%s %s", maxD, maxH);
+            my_strptime(end_datetime, "%d/%m/%Y %H:%M:%S", &end_tm);
+            end_timestamp = mktime(&end_tm);
+        }
+        else if(strcmp(end_date, "*") == 0 && strcmp(end_time, "*") == 0){
+            end_timestamp = b; // valor maximo pro timestamp
         }
 
-        search_chuiter(root, name, start_timestamp, end_timestamp);
+        if(strcmp(name, "*") == 0 )
+            messages_from_all_users(root, start_timestamp, end_timestamp, "", &Qtd);
+        else
+            search_chuiter(root, name, start_timestamp, end_timestamp, &Qtd);
+
+        printf("%d chuites encontrado(s) \n\n", Qtd);
+        Qtd=0;
     }
  
     return 0;
 }
+
+
